@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { Tabs, Tab, TabHeading, Container } from 'native-base'
+import { Tabs, Tab, Container } from 'native-base'
 import { StyleSheet } from 'react-native'
 import AppLoading from 'expo-app-loading'
 import bootstrap from './src/bootstrap'
 import { PercentTab } from './src/components/tabs/PercentTab'
 import { SoutStiffTab } from './src/components/tabs/SoutStiffTab'
 import { Header } from './src/components/Header'
-import { FontAwesome } from '@expo/vector-icons'
 
 export default function App() {
 	const [isReady, setIsReady] = useState(false)

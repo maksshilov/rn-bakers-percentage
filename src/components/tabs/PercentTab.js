@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Pressable, StyleSheet, View } from 'react-native'
+import React, { useState } from 'react'
+import { Pressable, StyleSheet } from 'react-native'
 import { Ingridient } from '../../components/Ingridient'
 import { Ionicons } from '@expo/vector-icons'
 
