@@ -4,7 +4,10 @@ import { Ingridient } from '../../components/Ingridient'
 import { Ionicons } from '@expo/vector-icons'
 
 export const PercentTab = () => {
-	const [flour, setFlour] = useState(0)
+	const [flour, setFlour] = useState({
+		mass: 0,
+		perc: 0,
+	})
 	const [water, setWater] = useState({
 		mass: 0,
 		perc: 0,
@@ -19,14 +22,18 @@ export const PercentTab = () => {
 	return (
 		<React.Fragment>
 			<Ingridient
-				name={'Flour'}
-				mass={flour.toString()}
-				onChangeMass={(flour) => {
+				name={'Main Flour'}
+				mass={flour.mass.toString()}
+				perc={flour.perc.toString()}
+				onChangeMass={(mass) => {
 					const { mass: waterMass, perc: waterPerc } = water
 					const { mass: saltMass, perc: saltPerc } = salt
-					let newWaterPerc = Math.round((waterMass / flour) * 100)
-					let newSaltPerc = Math.round((saltMass / flour) * 100)
-					setFlour(flour)
+					let newWaterPerc = Math.round((waterMass / mass) * 100)
+					let newSaltPerc = Math.round((saltMass / mass) * 100)
+					setFlour({
+						mass,
+						perc: 100,
+					})
 
 					setWater({
 						mass: waterMass,
@@ -50,7 +57,7 @@ export const PercentTab = () => {
 				mass={water.mass.toString()}
 				perc={water.perc.toString()}
 				onChangeMass={(mass) => {
-					const newPerc = Math.round((mass / flour) * 10000) / 100
+					const newPerc = Math.round((mass / flour.mass) * 10000) / 100
 
 					setWater({
 						mass,
@@ -58,7 +65,7 @@ export const PercentTab = () => {
 					})
 				}}
 				onChangePerc={(perc) => {
-					const newMass = Math.round(flour * perc) / 100
+					const newMass = Math.round(flour.mass * perc) / 100
 					setWater({
 						mass: !isNaN(newMass) && newMass !== Infinity ? newMass : water.mass,
 						perc,
@@ -70,35 +77,16 @@ export const PercentTab = () => {
 				mass={salt.mass.toString()}
 				perc={salt.perc.toString()}
 				onChangeMass={(mass) => {
-					const newPerc = Math.round((mass / flour) * 10000) / 100
+					const newPerc = Math.round((mass / flour.mass) * 10000) / 100
 					setSalt({
 						mass,
 						perc: !isNaN(newPerc) && newPerc !== Infinity ? newPerc : salt.perc,
 					})
 				}}
 				onChangePerc={(perc) => {
-					const newMass = Math.round(flour * perc * 10) / 1000
+					const newMass = Math.round(flour.mass * perc * 10) / 1000
 					setSalt({
 						mass: !isNaN(newMass) && newMass !== Infinity ? newMass : salt.mass,
-						perc,
-					})
-				}}
-			/>
-			<Ingridient
-				name={'Yeast / Sour Starter'}
-				mass={salt.mass.toString()}
-				perc={salt.perc.toString()}
-				onChangeMass={(mass) => {
-					const perc = Math.round((mass / flour) * 10000) / 100
-					setSalt({
-						mass,
-						perc,
-					})
-				}}
-				onChangePerc={(perc) => {
-					const mass = Math.round(flour * perc * 10) / 1000
-					setSalt({
-						mass,
 						perc,
 					})
 				}}
@@ -120,9 +108,9 @@ export const PercentTab = () => {
 					borderRadius: 30,
 				}}
 				onPress={() => {
+					setFlour({ mass: 0, perc: 0 })
 					setWater({ mass: 0, perc: 0 })
 					setSalt({ mass: 0, perc: 0 })
-					setFlour(0)
 				}}
 			>
 				<Ionicons name="trash-outline" size={24} color="white" />
