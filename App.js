@@ -3,9 +3,11 @@ import { Tabs, Tab, Container } from 'native-base'
 import { StyleSheet } from 'react-native'
 import AppLoading from 'expo-app-loading'
 import bootstrap from './src/bootstrap'
-import { PercentTab } from './src/components/tabs/PercentTab'
+import PercentTab from './src/components/tabs/PercentTab'
 import { SoutStiffTab } from './src/components/tabs/SoutStiffTab'
 import { Header } from './src/components/Header'
+import { Provider } from 'react-redux'
+import store from './src/store'
 
 export default function App() {
 	const [isReady, setIsReady] = useState(false)
@@ -19,57 +21,58 @@ export default function App() {
 			/>
 		)
 	}
-
 	return (
-		<Container>
-			<Header hasTabs />
-			<Tabs initialPage={0}>
-				<Tab
-					heading="Baker %"
-					tabStyle={{
-						backgroundColor: '#000',
-					}}
-					activeTabStyle={{
-						backgroundColor: '#000',
-					}}
-					textStyle={{
-						color: '#888',
-						fontFamily: 'nunito-bold',
-					}}
-					activeTextStyle={{
-						color: '#fff',
-						fontFamily: 'nunito-bold',
-					}}
-				>
-					<PercentTab />
-				</Tab>
-				<Tab
-					heading="Liquid / Stiff"
-					// heading={
-					// 	<TabHeading>
-					// 		<Text>Sour</Text>
-					// 		<FontAwesome name="exchange" size={24} />
-					// 	</TabHeading>
-					// }
-					tabStyle={{
-						backgroundColor: '#000',
-					}}
-					activeTabStyle={{
-						backgroundColor: '#000',
-					}}
-					textStyle={{
-						color: '#888',
-						fontFamily: 'nunito-bold',
-					}}
-					activeTextStyle={{
-						color: '#fff',
-						fontFamily: 'nunito-bold',
-					}}
-				>
-					<SoutStiffTab />
-				</Tab>
-			</Tabs>
-		</Container>
+		<Provider store={store}>
+			<Container>
+				<Header hasTabs />
+				<Tabs initialPage={0}>
+					<Tab
+						heading="Baker %"
+						tabStyle={{
+							backgroundColor: '#000',
+						}}
+						activeTabStyle={{
+							backgroundColor: '#000',
+						}}
+						textStyle={{
+							color: '#888',
+							fontFamily: 'nunito-bold',
+						}}
+						activeTextStyle={{
+							color: '#fff',
+							fontFamily: 'nunito-bold',
+						}}
+					>
+						<PercentTab />
+					</Tab>
+					<Tab
+						heading="Liquid / Stiff"
+						// heading={
+						// 	<TabHeading>
+						// 		<Text>Sour</Text>
+						// 		<FontAwesome name="exchange" size={24} />
+						// 	</TabHeading>
+						// }
+						tabStyle={{
+							backgroundColor: '#000',
+						}}
+						activeTabStyle={{
+							backgroundColor: '#000',
+						}}
+						textStyle={{
+							color: '#888',
+							fontFamily: 'nunito-bold',
+						}}
+						activeTextStyle={{
+							color: '#fff',
+							fontFamily: 'nunito-bold',
+						}}
+					>
+						<SoutStiffTab />
+					</Tab>
+				</Tabs>
+			</Container>
+		</Provider>
 	)
 }
 

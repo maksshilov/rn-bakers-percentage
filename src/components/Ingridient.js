@@ -22,7 +22,7 @@ export const Ingridient = ({ name, mass, perc, onChangeMass, onChangePerc }) => 
 			<Text style={styles.units}>kg</Text>
 			<TextInput
 				style={styles.value}
-				maxLength={6}
+				maxLength={4}
 				keyboardType={'numeric'}
 				placeholder="0"
 				value={perc}
