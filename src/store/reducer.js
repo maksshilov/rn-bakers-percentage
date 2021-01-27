@@ -1,11 +1,9 @@
-import { ReactReduxContext } from 'react-redux'
-
 const initialState = {
 	flour: 0,
-	flourMain: { mass: 0, perc: 0 },
-	flourAdd: { mass: 0, perc: 0 },
-	water: { mass: 0, perc: 0 },
-	salt: { mass: 0, perc: 0 },
+	flourMain: { title: 'Main Flour', mass: 0, perc: 0 },
+	flourAdd: { title: 'Add. Flour', mass: 0, perc: 0 },
+	water: { title: 'Water', mass: 0, perc: 0 },
+	salt: { title: 'Salt', mass: 0, perc: 0 },
 }
 
 export const reducer = (state = initialState, action) => {
@@ -35,6 +33,34 @@ export const reducer = (state = initialState, action) => {
 					perc: Math.round((state.salt.mass / flour) * 1000) / 10,
 				},
 			}
+		case 'FLOUR_MAIN_PERC':
+			return {
+				...state,
+				flourMain: {
+					...state.flourMain,
+					mass: (state.flour * action.payload) / 100,
+					perc: action.payload,
+				},
+				flourAdd: {
+					...state.flourAdd,
+					mass: (state.flour * (100 - action.payload)) / 100,
+					perc: 100 - action.payload,
+				},
+				water: {
+					...state.water,
+					perc:
+						!isNaN(state.flour) && state.flour !== Infinity && state.flour !== 0
+							? Math.round((state.water.mass / state.flour) * 1000) / 10
+							: state.water.perc,
+				},
+				salt: {
+					...state.salt,
+					perc:
+						!isNaN(state.flour) && state.flour !== Infinity && state.flour !== 0
+							? Math.round((state.salt.mass / state.flour) * 1000) / 10
+							: state.salt.perc,
+				},
+			}
 		case 'FLOUR_ADD_MASS':
 			flour = state.flourMain.mass + action.payload
 			return {
@@ -45,6 +71,7 @@ export const reducer = (state = initialState, action) => {
 					perc: flour === 0 ? 0 : Math.round((state.flourMain.mass / flour) * 1000) / 10,
 				},
 				flourAdd: {
+					...state.flourAdd,
 					mass: action.payload,
 					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
 				},
@@ -62,6 +89,7 @@ export const reducer = (state = initialState, action) => {
 			return {
 				...state,
 				water: {
+					...state.water,
 					mass: action.payload,
 					perc:
 						!isNaN(percIngridient) && percIngridient !== Infinity
@@ -74,6 +102,8 @@ export const reducer = (state = initialState, action) => {
 			return {
 				...state,
 				water: {
+					...state.water,
+
 					mass:
 						!isNaN(massIngridient) && massIngridient !== Infinity
 							? massIngridient
@@ -86,6 +116,8 @@ export const reducer = (state = initialState, action) => {
 			return {
 				...state,
 				salt: {
+					...state.salt,
+
 					mass: action.payload,
 					perc:
 						!isNaN(percIngridient) && percIngridient !== Infinity
@@ -93,14 +125,33 @@ export const reducer = (state = initialState, action) => {
 							: state.salt.perc,
 				},
 			}
+		case 'SALT_PERC':
+			massIngridient = Math.round(state.flour * action.payload) / 100
+			return {
+				...state,
+				salt: {
+					...state.salt,
+
+					mass:
+						!isNaN(massIngridient) && massIngridient !== Infinity
+							? massIngridient
+							: state.salt.mass,
+					perc: action.payload,
+				},
+			}
 		case 'CLEAR':
 			return {
 				flour: 0,
-				flourMain: { mass: 0, perc: 0 },
-				flourAdd: { mass: 0, perc: 0 },
-				water: { mass: 0, perc: 0 },
-				salt: { mass: 0, perc: 0 },
+				flourMain: { title: 'Main floue', mass: 0, perc: 0 },
+				flourAdd: { title: 'Add. Floue', mass: 0, perc: 0 },
+				water: { title: 'Water', mass: 0, perc: 0 },
+				salt: { title: 'Salt', mass: 0, perc: 0 },
 			}
+		case 'ADD':
+			const newItem = action.payload
+			const newState = { ...state }
+			newState[newItem] = { title: newItem, mass: 0, perc: 0 }
+			return { ...newState }
 		default:
 			return state
 	}
