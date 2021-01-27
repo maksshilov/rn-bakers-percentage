@@ -4,149 +4,51 @@ import { Ingridient } from '../../components/Ingridient'
 import { Ionicons } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 
-const PercentTab = (props) => {
-	const [flour, setFlour] = useState(0)
-
-	const [flourMain, setFlourMain] = useState({
-		mass: 0,
-		perc: 0,
-	})
-	const [flourAdd, setFlourAdd] = useState({
-		mass: 0,
-		perc: 0,
-	})
-	const [water, setWater] = useState({
-		mass: 0,
-		perc: 0,
-	})
-	const [salt, setSalt] = useState({
-		mass: 0,
-		perc: 0,
-	})
-
-	// console.log(water)
+const PercentTab = ({
+	state,
+	flourMainMass,
+	flourAddMass,
+	waterMass,
+	waterPerc,
+	saltMass,
+	clear,
+}) => {
+	// console.log(state)
 
 	return (
 		<React.Fragment>
 			<Ingridient
 				name={'Main Flour'}
-				mass={flourMain.mass.toString()}
-				perc={flourMain.perc.toString()}
-				onChangeMass={(mass) => {
-					const { mass: waterMass, perc: waterPerc } = water
-					const { mass: saltMass, perc: saltPerc } = salt
-
-					let newWaterPerc = Math.round((waterMass / mass) * 100)
-					let newSaltPerc = Math.round((saltMass / mass) * 100)
-
-					let flourCommon = flourAdd.mass + mass
-					setFlour(flourCommon)
-
-					setFlourMain({
-						mass,
-						perc: flourCommon === 0 ? 0 : Math.round((mass / flourCommon) * 1000) / 10,
-					})
-
-					setFlourAdd({
-						...flourAdd,
-						perc:
-							flourCommon === 0
-								? 0
-								: Math.round((flourAdd.mass / flourCommon) * 1000) / 10,
-					})
-
-					setWater({
-						mass: waterMass,
-						perc:
-							!isNaN(newWaterPerc) && newWaterPerc !== Infinity
-								? newWaterPerc
-								: waterPerc,
-					})
-
-					setSalt({
-						mass: saltMass,
-						perc:
-							!isNaN(newSaltPerc) && newSaltPerc !== Infinity
-								? newSaltPerc
-								: saltPerc,
-					})
-				}}
+				mass={state.flourMain.mass.toString()}
+				perc={state.flourMain.perc.toString()}
+				onChangeMass={(mass) => flourMainMass(mass)}
 			/>
 			<Ingridient
 				name={'Add. Flour'}
-				mass={flourAdd.mass.toString()}
-				perc={flourAdd.perc.toString()}
-				onChangeMass={(mass) => {
-					const { mass: waterMass, perc: waterPerc } = water
-					const { mass: saltMass, perc: saltPerc } = salt
-
-					let newWaterPerc = Math.round((waterMass / mass) * 100)
-					let newSaltPerc = Math.round((saltMass / mass) * 100)
-
-					let flourCommon = flourMain.mass + mass
-					setFlour(flourCommon)
-
-					setFlourMain({
-						...flourMain,
-						perc:
-							flourCommon === 0
-								? 0
-								: Math.round((flourMain.mass / flourCommon) * 1000) / 10,
-					})
-
-					setFlourAdd({
-						mass,
-						perc: flourCommon === 0 ? 0 : Math.round((mass / flourCommon) * 1000) / 10,
-					})
-
-					setWater({
-						mass: waterMass,
-						perc:
-							!isNaN(newWaterPerc) && newWaterPerc !== Infinity
-								? newWaterPerc
-								: waterPerc,
-					})
-
-					setSalt({
-						mass: saltMass,
-						perc:
-							!isNaN(newSaltPerc) && newSaltPerc !== Infinity
-								? newSaltPerc
-								: saltPerc,
-					})
-				}}
+				mass={state.flourAdd.mass.toString()}
+				perc={state.flourAdd.perc.toString()}
+				onChangeMass={(mass) => flourAddMass(mass)}
 			/>
 			<Ingridient
 				name={'Water'}
-				mass={water.mass.toString()}
-				perc={water.perc.toString()}
-				onChangeMass={(mass) => {
-					const newPerc = Math.round((mass / flour) * 10000) / 100
-
-					setWater({
-						mass,
-						perc: !isNaN(newPerc) && newPerc !== Infinity ? newPerc : water.perc,
-					})
-				}}
+				mass={state.water.mass.toString()}
+				perc={state.water.perc.toString()}
+				onChangeMass={(mass) => waterMass(mass)}
 				onChangePerc={(perc) => {
-					const newMass = Math.round(flour * perc) / 100
-					setWater({
-						mass: !isNaN(newMass) && newMass !== Infinity ? newMass : water.mass,
-						perc,
-					})
+					waterPerc(perc)
+
+					// const newMass = Math.round(flour * perc) / 100
+					// setWater({
+					// 	mass: !isNaN(newMass) && newMass !== Infinity ? newMass : water.mass,
+					// 	perc,
+					// })
 				}}
 			/>
 			<Ingridient
 				name={'Salt'}
-				mass={salt.mass.toString()}
-				perc={salt.perc.toString()}
-				onChangeMass={(mass) => {
-					const newPerc = Math.round((mass / flour) * 10000) / 100
-					setSalt({
-						mass,
-						perc: !isNaN(newPerc) && newPerc !== Infinity ? newPerc : salt.perc,
-					})
-				}}
+				mass={state.salt.mass.toString()}
+				perc={state.salt.perc.toString()}
+				onChangeMass={(mass) => saltMass(mass)}
 				onChangePerc={(perc) => {
 					const newMass = Math.round(flour * perc * 10) / 1000
 					setSalt({
@@ -171,15 +73,7 @@ const PercentTab = (props) => {
 					borderWidth: 1,
 					borderRadius: 30,
 				}}
-				onPress={() => {
-					props.clog()
-					console.log(props.someVar)
-					setFlour(0)
-					setFlourMain({ mass: 0, perc: 0 })
-					setFlourAdd({ mass: 0, perc: 0 })
-					setWater({ mass: 0, perc: 0 })
-					setSalt({ mass: 0, perc: 0 })
-				}}
+				onPress={() => clear()}
 			>
 				<Ionicons name="trash-outline" size={24} color="white" />
 			</Pressable>
@@ -201,14 +95,21 @@ const styles = StyleSheet.create({
 	},
 })
 
+// REDUX START
 const mapStateToProps = (state) => {
-	return { someVar: state }
+	return { state }
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		clog: () => dispatch({ type: 'CLOG' }),
+		flourMainMass: (mass) => dispatch({ type: 'FLOUR_MAIN_MASS', payload: mass }),
+		flourAddMass: (mass) => dispatch({ type: 'FLOUR_ADD_MASS', payload: mass }),
+		waterMass: (mass) => dispatch({ type: 'WATER_MASS', payload: mass }),
+		waterPerc: (perc) => dispatch({ type: 'WATER_PERC', payload: perc }),
+		saltMass: (mass) => dispatch({ type: 'SALT_MASS', payload: mass }),
+		clear: () => dispatch({ type: 'CLEAR' }),
 	}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PercentTab)
+// REDUX END
