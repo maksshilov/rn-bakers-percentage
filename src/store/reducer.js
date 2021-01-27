@@ -1,7 +1,7 @@
 const initialState = {
 	flour: 0,
-	flourMain: { title: 'Main Flour', mass: 0, perc: 0 },
-	flourAdd: { title: 'Add. Flour', mass: 0, perc: 0 },
+	flourMain: { title: 'Flour', mass: 0, perc: 0 },
+	flourAdd: { title: 'Flour # 2', mass: 0, perc: 0 },
 	water: { title: 'Water', mass: 0, perc: 0 },
 	salt: { title: 'Salt', mass: 0, perc: 0 },
 }
@@ -11,12 +11,13 @@ export const reducer = (state = initialState, action) => {
 	let percIngridient
 	let massIngridient
 	switch (action.type) {
-		case 'FLOUR_MAIN_MASS':
+		case 'flourMainMass':
 			flour = state.flourAdd.mass + action.payload
 			return {
-				...state,
+				// ...state,
 				flour,
 				flourMain: {
+					...state.flourMain,
 					mass: action.payload,
 					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
 				},
@@ -61,10 +62,10 @@ export const reducer = (state = initialState, action) => {
 							: state.salt.perc,
 				},
 			}
-		case 'FLOUR_ADD_MASS':
+		case 'flourAddMass':
 			flour = state.flourMain.mass + action.payload
 			return {
-				...state,
+				// ...state,
 				flour: state.flourMain.mass + action.payload,
 				flourMain: {
 					...state.flourMain,
@@ -84,7 +85,7 @@ export const reducer = (state = initialState, action) => {
 					perc: Math.round((state.salt.mass / flour) * 1000) / 10,
 				},
 			}
-		case 'WATER_MASS':
+		case 'waterMass':
 			percIngridient = Math.round((action.payload / state.flour) * 1000) / 10
 			return {
 				...state,
@@ -103,7 +104,6 @@ export const reducer = (state = initialState, action) => {
 				...state,
 				water: {
 					...state.water,
-
 					mass:
 						!isNaN(massIngridient) && massIngridient !== Infinity
 							? massIngridient
@@ -111,13 +111,12 @@ export const reducer = (state = initialState, action) => {
 					perc: action.payload,
 				},
 			}
-		case 'SALT_MASS':
+		case 'saltMass':
 			percIngridient = Math.round((action.payload / state.flour) * 1000) / 10
 			return {
 				...state,
 				salt: {
 					...state.salt,
-
 					mass: action.payload,
 					perc:
 						!isNaN(percIngridient) && percIngridient !== Infinity
@@ -142,8 +141,8 @@ export const reducer = (state = initialState, action) => {
 		case 'CLEAR':
 			return {
 				flour: 0,
-				flourMain: { title: 'Main floue', mass: 0, perc: 0 },
-				flourAdd: { title: 'Add. Floue', mass: 0, perc: 0 },
+				flourMain: { title: 'Flour', mass: 0, perc: 0 },
+				flourAdd: { title: 'Flour # 2', mass: 0, perc: 0 },
 				water: { title: 'Water', mass: 0, perc: 0 },
 				salt: { title: 'Salt', mass: 0, perc: 0 },
 			}

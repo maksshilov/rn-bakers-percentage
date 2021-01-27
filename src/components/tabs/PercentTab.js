@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
-import { FlatList, Pressable, ScrollView, StyleSheet } from 'react-native'
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Ingridient } from '../../components/Ingridient'
 import { Ionicons } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 import DialogInput from 'react-native-dialog-input'
+import store from '../../store'
+// import { View } from 'native-base'
 
 const PercentTab = ({
 	state,
@@ -19,17 +21,32 @@ const PercentTab = ({
 }) => {
 	const [isDialogVisible, setIsDialogVisible] = useState(false)
 
-	console.log(state)
-
 	let mapState = state
+	let someState = {}
+
+	Object.keys(mapState).map((item) => {
+		let fn = (value) => {
+			console.log(value)
+			store.dispatch({ type: item + 'Mass', payload: value })
+		}
+		Object.defineProperty(fn, 'name', { value: item + 'Mass' })
+		someState[item] = {
+			mass: 0,
+			perc: 0,
+			fn,
+		}
+	})
+
+	console.log(Object.keys(mapState))
+
 	let content = Object.keys(mapState).map((item) => {
-		console.log(mapState[item])
 		if (mapState[item].title) {
 			return (
 				<Ingridient
 					name={mapState[item].title}
 					mass={mapState[item].mass.toString()}
 					perc={mapState[item].perc.toString()}
+					onChangeMass={(mass) => someState[item].fn(mass)}
 				/>
 			)
 		}
@@ -38,6 +55,24 @@ const PercentTab = ({
 	return (
 		<React.Fragment>
 			<ScrollView>{content}</ScrollView>
+			{/* <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+				<Text>Flour ALL: {state.flour}</Text>
+				<Text>Flour: {state.flourMain.mass}</Text>
+				<Text>Flour#2: {state.flourAdd.mass}</Text>
+				<Text>Water: {state.water.mass}</Text>
+				<Text>Salt: {state.salt.mass}</Text>
+			</View> */}
+			{Object.keys(mapState).map((item) => {
+				if (mapState[item].title) {
+					return (
+						<View>
+							<Text style={{ fontWeight: 'bold' }}>{mapState[item].title}</Text>
+							<Text>mass={mapState[item].mass}</Text>
+							<Text>perc={mapState[item].perc}</Text>
+						</View>
+					)
+				}
+			})}
 			{/* <Ingridient
 				name={state.flourMain.title}
 				mass={state.flourMain.mass.toString()}
@@ -70,7 +105,7 @@ const PercentTab = ({
 				android_ripple={{ color: 'white' }}
 				style={{
 					position: 'absolute',
-					left: 20,
+					left: 200,
 					bottom: 20,
 					flex: 1,
 					alignItems: 'center',
@@ -108,8 +143,11 @@ const PercentTab = ({
 				isDialogVisible={isDialogVisible}
 				title={'New ingridient'}
 				message={'Enter the new ingredient name'}
-				hintInput={'HINT INPUT'}
-				submitInput={(inputText) => add(inputText)}
+				// hintInput={'HINT INPUT'}
+				submitInput={(inputText) => {
+					add(inputText)
+					setIsDialogVisible(false)
+				}}
 				closeDialog={() => setIsDialogVisible(false)}
 			></DialogInput>
 		</React.Fragment>
@@ -137,13 +175,13 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		flourMainMass: (mass) => dispatch({ type: 'FLOUR_MAIN_MASS', payload: mass }),
-		flourMainPerc: (perc) => dispatch({ type: 'FLOUR_MAIN_PERC', payload: perc }),
-		flourAddMass: (mass) => dispatch({ type: 'FLOUR_ADD_MASS', payload: mass }),
-		waterMass: (mass) => dispatch({ type: 'WATER_MASS', payload: mass }),
-		waterPerc: (perc) => dispatch({ type: 'WATER_PERC', payload: perc }),
-		saltMass: (mass) => dispatch({ type: 'SALT_MASS', payload: mass }),
-		saltPerc: (perc) => dispatch({ type: 'SALT_PERC', payload: perc }),
+		// flourMainMass: (mass) => dispatch({ type: 'FLOUR_MAIN_MASS', payload: mass }),
+		// flourMainPerc: (perc) => dispatch({ type: 'FLOUR_MAIN_PERC', payload: perc }),
+		// flourAddMass: (mass) => dispatch({ type: 'FLOUR_ADD_MASS', payload: mass }),
+		// waterMass: (mass) => dispatch({ type: 'WATER_MASS', payload: mass }),
+		// waterPerc: (perc) => dispatch({ type: 'WATER_PERC', payload: perc }),
+		// saltMass: (mass) => dispatch({ type: 'SALT_MASS', payload: mass }),
+		// saltPerc: (perc) => dispatch({ type: 'SALT_PERC', payload: perc }),
 		clear: () => dispatch({ type: 'CLEAR' }),
 		add: (newItem) => dispatch({ type: 'ADD', payload: newItem }),
 	}
