@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Tabs, Tab, Container } from 'native-base'
-import { StyleSheet } from 'react-native'
+import { LogBox, StyleSheet } from 'react-native'
 import AppLoading from 'expo-app-loading'
 import bootstrap from './src/bootstrap'
 import PercentTab from './src/components/tabs/PercentTab'
@@ -90,3 +90,4 @@ const styles = StyleSheet.create({
 		fontFamily: 'nunito',
 	},
 })
+LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `tabStyle`'])

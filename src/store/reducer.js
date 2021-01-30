@@ -1,9 +1,10 @@
 const initialState = {
 	flour: 0,
-	flourMain: { title: 'Flour', mass: 0, perc: 0 },
-	flourAdd: { title: 'Flour # 2', mass: 0, perc: 0 },
-	water: { title: 'Water', mass: 0, perc: 0 },
-	salt: { title: 'Salt', mass: 0, perc: 0 },
+	flourMain: { key: 'flourMain', id: 1, title: 'Flour', mass: 0, perc: 0 },
+	flourAdd: { key: 'flourAdd', id: 2, title: 'Flour # 2', mass: 0, perc: 0 },
+	water: { key: 'water', id: 3, title: 'Water', mass: 0, perc: 0 },
+	salt: { key: 'salt', id: 4, title: 'Salt', mass: 0, perc: 0 },
+	yeastsour: { key: 'yeastsour', id: 5, title: 'Yeast / Sour Starter', mass: 0, perc: 0 },
 }
 
 export const reducer = (state = initialState, action) => {
@@ -32,6 +33,10 @@ export const reducer = (state = initialState, action) => {
 				salt: {
 					...state.salt,
 					perc: Math.round((state.salt.mass / flour) * 1000) / 10,
+				},
+				yeastsour: {
+					...state.yeastsour,
+					perc: Math.round((state.yeastsour.mass / flour) * 1000) / 10,
 				},
 			}
 		case 'FLOUR_MAIN_PERC':
@@ -65,7 +70,6 @@ export const reducer = (state = initialState, action) => {
 		case 'flourAddMass':
 			flour = state.flourMain.mass + action.payload
 			return {
-				// ...state,
 				flour: state.flourMain.mass + action.payload,
 				flourMain: {
 					...state.flourMain,
@@ -83,6 +87,10 @@ export const reducer = (state = initialState, action) => {
 				salt: {
 					...state.salt,
 					perc: Math.round((state.salt.mass / flour) * 1000) / 10,
+				},
+				yeastsour: {
+					...state.yeastsour,
+					perc: Math.round((state.yeastsour.mass / flour) * 1000) / 10,
 				},
 			}
 		case 'waterMass':
@@ -138,18 +146,44 @@ export const reducer = (state = initialState, action) => {
 					perc: action.payload,
 				},
 			}
+		case 'yeastsourMass':
+			percIngridient = Math.round((action.payload / state.flour) * 1000) / 10
+			return {
+				...state,
+				yeastsour: {
+					...state.yeastsour,
+					mass: action.payload,
+					perc:
+						!isNaN(percIngridient) && percIngridient !== Infinity
+							? percIngridient
+							: state.yeastsour.perc,
+				},
+			}
 		case 'CLEAR':
 			return {
 				flour: 0,
-				flourMain: { title: 'Flour', mass: 0, perc: 0 },
-				flourAdd: { title: 'Flour # 2', mass: 0, perc: 0 },
-				water: { title: 'Water', mass: 0, perc: 0 },
-				salt: { title: 'Salt', mass: 0, perc: 0 },
+				flourMain: { key: 'flourMain', id: 1, title: 'Flour', mass: 0, perc: 0 },
+				flourAdd: { key: 'flourAdd', id: 2, title: 'Flour # 2', mass: 0, perc: 0 },
+				water: { key: 'water', id: 3, title: 'Water', mass: 0, perc: 0 },
+				salt: { key: 'salt', id: 4, title: 'Salt', mass: 0, perc: 0 },
+				yeastsour: {
+					key: 'yeastsour',
+					id: 5,
+					title: 'Yeast / Sour Starter',
+					mass: 0,
+					perc: 0,
+				},
 			}
 		case 'ADD':
-			const newItem = action.payload
+			const { newItem, newItemSort, stateLength } = action.payload
 			const newState = { ...state }
-			newState[newItem] = { title: newItem, mass: 0, perc: 0 }
+			newState[newItem] = {
+				key: newItemSort,
+				id: Object.keys(state).length,
+				title: newItem,
+				mass: 0,
+				perc: 0,
+			}
 			return { ...newState }
 		default:
 			return state
