@@ -9,8 +9,44 @@ const initialState = {
 }
 
 export const reducer = (state = initialState, action) => {
-	let ingrMassObj = {}
+	let flour
+	console.log(flour)
 
+	let flourMassObj = {}
+	Object.keys(state)
+		.filter((item) => item.match('flour'))
+		.slice(1)
+		.map(
+			(item) => {
+				if (item === action.type.replace('Mass', '')) {
+					flourMassObj[item] = {
+						...state[item],
+						mass: action.payload,
+						perc:
+							state.flour === 0
+								? 0
+								: Math.round((action.payload / state.flour) * 1000) / 10,
+					}
+				} else {
+					flourMassObj[item] = {
+						...state[item],
+						perc:
+							state.flour === 0
+								? 0
+								: Math.round((state[item].mass / state.flour) * 1000) / 10,
+					}
+				}
+			}
+			// {
+			// 	flourMassObj[item] = {
+			// 		...state[item],
+			// 	}
+			// }
+		)
+
+	// console.log(flourMassObj)
+
+	let ingrMassObj = {}
 	Object.keys(state)
 		.filter((item) => !item.match('flour'))
 		.map((item) => {
@@ -23,31 +59,29 @@ export const reducer = (state = initialState, action) => {
 			}
 		})
 
-	console.log(ingrMassObj)
-
-	let flour
 	let percIngridient
 	let massIngridient
 
 	switch (action.type) {
 		case 'flourMainMass':
-			flour = state.flourAdd.mass + action.payload
 			return {
 				flour,
+				...flourMassObj,
 				...ingrMassObj,
-				flourMain: {
-					...state.flourMain,
-					mass: action.payload,
-					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
-				},
-				flourAdd: {
-					...state.flourAdd,
-					perc: flour === 0 ? 0 : Math.round((state.flourAdd.mass / flour) * 1000) / 10,
-				},
-				flourAdd_2: {
-					...state.flourAdd_2,
-					perc: flour === 0 ? 0 : Math.round((state.flourAdd_2.mass / flour) * 1000) / 10,
-				},
+
+				// flourMain: {
+				// 	...state.flourMain,
+				// 	mass: action.payload,
+				// 	perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
+				// },
+				// flourAdd: {
+				// 	...state.flourAdd,
+				// 	perc: flour === 0 ? 0 : Math.round((state.flourAdd.mass / flour) * 1000) / 10,
+				// },
+				// flourAdd_2: {
+				// 	...state.flourAdd_2,
+				// 	perc: flour === 0 ? 0 : Math.round((state.flourAdd_2.mass / flour) * 1000) / 10,
+				// },
 			}
 		case 'FLOUR_MAIN_PERC':
 			return {
@@ -82,7 +116,6 @@ export const reducer = (state = initialState, action) => {
 			return {
 				flour,
 				...ingrMassObj,
-
 				flourMain: {
 					...state.flourMain,
 					perc: flour === 0 ? 0 : Math.round((state.flourMain.mass / flour) * 1000) / 10,
@@ -102,7 +135,6 @@ export const reducer = (state = initialState, action) => {
 			return {
 				flour,
 				...ingrMassObj,
-
 				flourMain: {
 					...state.flourMain,
 					perc: flour === 0 ? 0 : Math.round((state.flourMain.mass / flour) * 1000) / 10,
