@@ -2,21 +2,39 @@ const initialState = {
 	flour: 0,
 	flourMain: { key: 'flourMain', id: 1, title: 'Flour', mass: 0, perc: 0 },
 	flourAdd: { key: 'flourAdd', id: 2, title: 'Flour # 2', mass: 0, perc: 0 },
+	flourAdd_2: { key: 'flourAdd_2', id: 2, title: 'Flour # 3', mass: 0, perc: 0 },
 	water: { key: 'water', id: 3, title: 'Water', mass: 0, perc: 0 },
 	salt: { key: 'salt', id: 4, title: 'Salt', mass: 0, perc: 0 },
 	yeastsour: { key: 'yeastsour', id: 5, title: 'Yeast / Sour Starter', mass: 0, perc: 0 },
 }
 
 export const reducer = (state = initialState, action) => {
+	let ingrMassObj = {}
+
+	Object.keys(state)
+		.filter((item) => !item.match('flour'))
+		.map((item) => {
+			ingrMassObj[item] = {
+				...state[item],
+				perc:
+					state.flour === 0 || isNaN(state.flour)
+						? 0
+						: Math.round((state[item].mass / state.flour) * 1000) / 10,
+			}
+		})
+
+	console.log(ingrMassObj)
+
 	let flour
 	let percIngridient
 	let massIngridient
+
 	switch (action.type) {
 		case 'flourMainMass':
 			flour = state.flourAdd.mass + action.payload
 			return {
-				// ...state,
 				flour,
+				...ingrMassObj,
 				flourMain: {
 					...state.flourMain,
 					mass: action.payload,
@@ -26,17 +44,9 @@ export const reducer = (state = initialState, action) => {
 					...state.flourAdd,
 					perc: flour === 0 ? 0 : Math.round((state.flourAdd.mass / flour) * 1000) / 10,
 				},
-				water: {
-					...state.water,
-					perc: Math.round((state.water.mass / flour) * 1000) / 10,
-				},
-				salt: {
-					...state.salt,
-					perc: Math.round((state.salt.mass / flour) * 1000) / 10,
-				},
-				yeastsour: {
-					...state.yeastsour,
-					perc: Math.round((state.yeastsour.mass / flour) * 1000) / 10,
+				flourAdd_2: {
+					...state.flourAdd_2,
+					perc: flour === 0 ? 0 : Math.round((state.flourAdd_2.mass / flour) * 1000) / 10,
 				},
 			}
 		case 'FLOUR_MAIN_PERC':
@@ -68,9 +78,11 @@ export const reducer = (state = initialState, action) => {
 				},
 			}
 		case 'flourAddMass':
-			flour = state.flourMain.mass + action.payload
+			flour = state.flourMain.mass + state.flourAdd_2.mass + action.payload
 			return {
-				flour: state.flourMain.mass + action.payload,
+				flour,
+				...ingrMassObj,
+
 				flourMain: {
 					...state.flourMain,
 					perc: flour === 0 ? 0 : Math.round((state.flourMain.mass / flour) * 1000) / 10,
@@ -80,17 +92,29 @@ export const reducer = (state = initialState, action) => {
 					mass: action.payload,
 					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
 				},
-				water: {
-					...state.water,
-					perc: Math.round((state.water.mass / flour) * 1000) / 10,
+				flourAdd_2: {
+					...state.flourAdd_2,
+					perc: flour === 0 ? 0 : Math.round((state.flourAdd_2.mass / flour) * 1000) / 10,
 				},
-				salt: {
-					...state.salt,
-					perc: Math.round((state.salt.mass / flour) * 1000) / 10,
+			}
+		case 'flourAdd_2Mass':
+			flour = state.flourMain.mass + state.flourAdd.mass + action.payload
+			return {
+				flour,
+				...ingrMassObj,
+
+				flourMain: {
+					...state.flourMain,
+					perc: flour === 0 ? 0 : Math.round((state.flourMain.mass / flour) * 1000) / 10,
 				},
-				yeastsour: {
-					...state.yeastsour,
-					perc: Math.round((state.yeastsour.mass / flour) * 1000) / 10,
+				flourAdd: {
+					...state.flourAdd,
+					perc: flour === 0 ? 0 : Math.round((state.flourAdd.mass / flour) * 1000) / 10,
+				},
+				flourAdd_2: {
+					...state.flourAdd_2,
+					mass: action.payload,
+					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
 				},
 			}
 		case 'waterMass':
@@ -164,6 +188,7 @@ export const reducer = (state = initialState, action) => {
 				flour: 0,
 				flourMain: { key: 'flourMain', id: 1, title: 'Flour', mass: 0, perc: 0 },
 				flourAdd: { key: 'flourAdd', id: 2, title: 'Flour # 2', mass: 0, perc: 0 },
+				flourAdd_2: { key: 'flourAdd_2', id: 2, title: 'Flour # 3', mass: 0, perc: 0 },
 				water: { key: 'water', id: 3, title: 'Water', mass: 0, perc: 0 },
 				salt: { key: 'salt', id: 4, title: 'Salt', mass: 0, perc: 0 },
 				yeastsour: {
@@ -175,12 +200,12 @@ export const reducer = (state = initialState, action) => {
 				},
 			}
 		case 'ADD':
-			const { newItem, newItemSort, stateLength } = action.payload
+			const { newItem, newItemSort } = action.payload
 			const newState = { ...state }
-			newState[newItem] = {
+			newState[newItemSort] = {
 				key: newItemSort,
 				id: Object.keys(state).length,
-				title: newItem,
+				title: newItemSort,
 				mass: 0,
 				perc: 0,
 			}

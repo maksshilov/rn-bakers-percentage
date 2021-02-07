@@ -11,7 +11,7 @@ const PercentTab = ({ state, clear, add }) => {
 	const [isDialogVisible, setIsDialogVisible] = useState(false)
 
 	let mapState = Object.values(state)
-		.map((item) => item)
+		// .map((item) => item)
 		.slice(1)
 		.sort((a, b) => a.id - b.id)
 
