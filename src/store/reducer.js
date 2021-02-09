@@ -9,80 +9,78 @@ const initialState = {
 }
 
 export const reducer = (state = initialState, action) => {
-	let flour
-	console.log(flour)
+	let flour = 0
+
+	Object.keys(state)
+		.filter((item) => item.match('flour'))
+		.slice(1)
+		.map((item) => {
+			if (item === action.type.replace('Mass', '')) {
+				flour += action.payload
+			} else {
+				flour += state[item].mass
+			}
+		})
 
 	let flourMassObj = {}
 	Object.keys(state)
 		.filter((item) => item.match('flour'))
 		.slice(1)
-		.map(
-			(item) => {
-				if (item === action.type.replace('Mass', '')) {
-					flourMassObj[item] = {
-						...state[item],
-						mass: action.payload,
-						perc:
-							state.flour === 0
-								? 0
-								: Math.round((action.payload / state.flour) * 1000) / 10,
-					}
-				} else {
-					flourMassObj[item] = {
-						...state[item],
-						perc:
-							state.flour === 0
-								? 0
-								: Math.round((state[item].mass / state.flour) * 1000) / 10,
-					}
-				}
-			}
-			// {
-			// 	flourMassObj[item] = {
-			// 		...state[item],
-			// 	}
-			// }
-		)
-
-	// console.log(flourMassObj)
-
-	let ingrMassObj = {}
-	Object.keys(state)
-		.filter((item) => !item.match('flour'))
 		.map((item) => {
-			ingrMassObj[item] = {
-				...state[item],
-				perc:
-					state.flour === 0 || isNaN(state.flour)
-						? 0
-						: Math.round((state[item].mass / state.flour) * 1000) / 10,
+			if (item === action.type.replace('Mass', '')) {
+				flourMassObj[item] = {
+					...state[item],
+					mass: action.payload,
+					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
+				}
+			} else {
+				flourMassObj[item] = {
+					...state[item],
+					perc: flour === 0 ? 0 : Math.round((state[item].mass / flour) * 1000) / 10,
+				}
 			}
 		})
 
-	let percIngridient
-	let massIngridient
+	let flourIngrPercObj = {}
+	Object.keys(state)
+		.filter((item) => !item.match('flour'))
+		.map((item) => {
+			flourIngrPercObj[item] = {
+				...state[item],
+				perc:
+					flour === 0 || isNaN(flour)
+						? 0
+						: Math.round((state[item].mass / flour) * 1000) / 10,
+			}
+		})
+
+	let percIngridient = Math.round((action.payload / flour) * 1000) / 10
+	let massIngridient = Math.round(flour * action.payload) / 100
+
+	if (Boolean(action.type.match('flour'))) {
+		return {
+			flour,
+			...flourMassObj,
+			...flourIngrPercObj,
+		}
+	}
+
+	if (Boolean(!action.type.match('flour')) && action.type.match('Mass')) {
+		let item = action.type.replace('Mass', '')
+		return {
+			...state,
+			[item]: {
+				...state[item],
+				mass: action.payload,
+				perc:
+					!isNaN(percIngridient) && percIngridient !== Infinity
+						? percIngridient
+						: state[item].perc,
+			},
+		}
+	}
 
 	switch (action.type) {
-		case 'flourMainMass':
-			return {
-				flour,
-				...flourMassObj,
-				...ingrMassObj,
-
-				// flourMain: {
-				// 	...state.flourMain,
-				// 	mass: action.payload,
-				// 	perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
-				// },
-				// flourAdd: {
-				// 	...state.flourAdd,
-				// 	perc: flour === 0 ? 0 : Math.round((state.flourAdd.mass / flour) * 1000) / 10,
-				// },
-				// flourAdd_2: {
-				// 	...state.flourAdd_2,
-				// 	perc: flour === 0 ? 0 : Math.round((state.flourAdd_2.mass / flour) * 1000) / 10,
-				// },
-			}
 		case 'FLOUR_MAIN_PERC':
 			return {
 				...state,
@@ -111,59 +109,7 @@ export const reducer = (state = initialState, action) => {
 							: state.salt.perc,
 				},
 			}
-		case 'flourAddMass':
-			flour = state.flourMain.mass + state.flourAdd_2.mass + action.payload
-			return {
-				flour,
-				...ingrMassObj,
-				flourMain: {
-					...state.flourMain,
-					perc: flour === 0 ? 0 : Math.round((state.flourMain.mass / flour) * 1000) / 10,
-				},
-				flourAdd: {
-					...state.flourAdd,
-					mass: action.payload,
-					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
-				},
-				flourAdd_2: {
-					...state.flourAdd_2,
-					perc: flour === 0 ? 0 : Math.round((state.flourAdd_2.mass / flour) * 1000) / 10,
-				},
-			}
-		case 'flourAdd_2Mass':
-			flour = state.flourMain.mass + state.flourAdd.mass + action.payload
-			return {
-				flour,
-				...ingrMassObj,
-				flourMain: {
-					...state.flourMain,
-					perc: flour === 0 ? 0 : Math.round((state.flourMain.mass / flour) * 1000) / 10,
-				},
-				flourAdd: {
-					...state.flourAdd,
-					perc: flour === 0 ? 0 : Math.round((state.flourAdd.mass / flour) * 1000) / 10,
-				},
-				flourAdd_2: {
-					...state.flourAdd_2,
-					mass: action.payload,
-					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
-				},
-			}
-		case 'waterMass':
-			percIngridient = Math.round((action.payload / state.flour) * 1000) / 10
-			return {
-				...state,
-				water: {
-					...state.water,
-					mass: action.payload,
-					perc:
-						!isNaN(percIngridient) && percIngridient !== Infinity
-							? percIngridient
-							: state.water.perc,
-				},
-			}
 		case 'WATER_PERC':
-			massIngridient = Math.round(state.flour * action.payload) / 100
 			return {
 				...state,
 				water: {
@@ -175,21 +121,7 @@ export const reducer = (state = initialState, action) => {
 					perc: action.payload,
 				},
 			}
-		case 'saltMass':
-			percIngridient = Math.round((action.payload / state.flour) * 1000) / 10
-			return {
-				...state,
-				salt: {
-					...state.salt,
-					mass: action.payload,
-					perc:
-						!isNaN(percIngridient) && percIngridient !== Infinity
-							? percIngridient
-							: state.salt.perc,
-				},
-			}
 		case 'SALT_PERC':
-			massIngridient = Math.round(state.flour * action.payload) / 100
 			return {
 				...state,
 				salt: {
@@ -200,19 +132,6 @@ export const reducer = (state = initialState, action) => {
 							? massIngridient
 							: state.salt.mass,
 					perc: action.payload,
-				},
-			}
-		case 'yeastsourMass':
-			percIngridient = Math.round((action.payload / state.flour) * 1000) / 10
-			return {
-				...state,
-				yeastsour: {
-					...state.yeastsour,
-					mass: action.payload,
-					perc:
-						!isNaN(percIngridient) && percIngridient !== Infinity
-							? percIngridient
-							: state.yeastsour.perc,
 				},
 			}
 		case 'CLEAR':
