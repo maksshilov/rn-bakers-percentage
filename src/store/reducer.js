@@ -1,14 +1,12 @@
 const initialState = {
 	flour: 0,
-	flourMain: { key: 'flourMain', type: 'flour', id: 1, title: 'Flour', mass: 0, perc: 0 },
-	flourAdd: { key: 'flourAdd', type: 'flour', id: 2, title: 'Flour # 2', mass: 0, perc: 0 },
-	flourAdd_2: { key: 'flourAdd_2', type: 'flour', id: 2, title: 'Flour # 3', mass: 0, perc: 0 },
-	water: { key: 'water', type: 'ingridient', id: 3, title: 'Water', mass: 0, perc: 0 },
-	salt: { key: 'salt', type: 'ingridient', id: 4, title: 'Salt', mass: 0, perc: 0 },
+	flourMain: { key: 'flourMain', type: 'flour', id: 1.1, title: 'Flour', mass: 0, perc: 0 },
+	water: { key: 'water', type: 'ingridient', id: 2.1, title: 'Water', mass: 0, perc: 0 },
+	salt: { key: 'salt', type: 'ingridient', id: 2.2, title: 'Salt', mass: 0, perc: 0 },
 	yeastsour: {
 		key: 'yeastsour',
 		type: 'ingridient',
-		id: 5,
+		id: 2.3,
 		title: 'Yeast / Sour Starter',
 		mass: 0,
 		perc: 0,
@@ -165,55 +163,42 @@ export const reducer = (state = initialState, action) => {
 				flourMain: {
 					key: 'flourMain',
 					type: 'flour',
-					id: 1,
+					id: 1.1,
 					title: 'Flour',
-					mass: 0,
-					perc: 0,
-				},
-				flourAdd: {
-					key: 'flourAdd',
-					type: 'flour',
-					id: 2,
-					title: 'Flour # 2',
-					mass: 0,
-					perc: 0,
-				},
-				flourAdd_2: {
-					key: 'flourAdd_2',
-					type: 'flour',
-					id: 2,
-					title: 'Flour # 3',
 					mass: 0,
 					perc: 0,
 				},
 				water: {
 					key: 'water',
 					type: 'ingridient',
-					id: 3,
+					id: 2.1,
 					title: 'Water',
 					mass: 0,
 					perc: 0,
 				},
-				salt: { key: 'salt', type: 'ingridient', id: 4, title: 'Salt', mass: 0, perc: 0 },
+				salt: { key: 'salt', type: 'ingridient', id: 2.2, title: 'Salt', mass: 0, perc: 0 },
 				yeastsour: {
 					key: 'yeastsour',
 					type: 'ingridient',
-					id: 5,
+					id: 2.3,
 					title: 'Yeast / Sour Starter',
 					mass: 0,
 					perc: 0,
 				},
 			}
 		case 'ADD':
-			const { newItem, newItemSort } = action.payload
+			const { newItem, newItemSort, type } = action.payload
+			let typeOfId = type === 'flour' ? '1.' : '2.'
 			const newState = { ...state }
 			newState[newItemSort] = {
 				key: newItemSort,
-				id: Object.keys(state).length,
-				title: newItemSort,
+				id: Number(typeOfId.concat(Object.keys(state).length)),
+				title: newItem[1].toString(),
 				mass: 0,
 				perc: 0,
+				type,
 			}
+
 			return { ...newState }
 		default:
 			return state

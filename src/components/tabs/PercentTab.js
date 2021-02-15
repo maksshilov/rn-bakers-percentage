@@ -1,27 +1,19 @@
 import React, { useState } from 'react'
-import {
-	FlatList,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from 'react-native'
+import { Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
 import { Ingridient } from '../../components/Ingridient'
 import { Ionicons } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 import DialogInput from 'react-native-dialog-input'
 import store from '../../store'
-// import { View } from 'native-base'
 
 const PercentTab = ({ state, clear, add }) => {
 	const [isDialogVisible, setIsDialogVisible] = useState(false)
 
 	let mapState = Object.values(state)
-		// .map((item) => item)
 		.slice(1)
 		.sort((a, b) => a.id - b.id)
+
+	console.log(mapState)
 
 	let someState = {}
 
@@ -43,7 +35,11 @@ const PercentTab = ({ state, clear, add }) => {
 
 	let content = Object.keys(someState).map((item) => {
 		return (
-			<TouchableOpacity onLongPress={() => alert(someState[item].title)} android_ripple>
+			<TouchableOpacity
+				key={someState[item].key}
+				onLongPress={() => alert(someState[item].title)}
+				android_ripple
+			>
 				<Ingridient
 					key={someState[item].key}
 					type={someState[item].type}
@@ -133,12 +129,16 @@ const mapDispatchToProps = (dispatch) => {
 		clear: () => dispatch({ type: 'CLEAR' }),
 		add: (newItem) => {
 			let newItemSort
+			let type
 
 			if (newItem[0]) {
+				type = 'flour'
 				newItemSort = 'flour'.concat(
 					newItem[1].toLowerCase().replace('flour', '').split(' ').reverse().join('')
 				)
 			} else {
+				type = 'ingridient'
+
 				newItemSort = newItem[1]
 					.toLowerCase()
 					.replace('flour', '')
@@ -148,7 +148,7 @@ const mapDispatchToProps = (dispatch) => {
 			}
 
 			console.log(newItemSort)
-			dispatch({ type: 'ADD', payload: { newItem, newItemSort } })
+			dispatch({ type: 'ADD', payload: { newItem, newItemSort, type } })
 		},
 	}
 }
