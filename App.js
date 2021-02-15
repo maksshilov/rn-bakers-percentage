@@ -47,12 +47,6 @@ export default function App() {
 					</Tab>
 					<Tab
 						heading="Liquid / Stiff"
-						// heading={
-						// 	<TabHeading>
-						// 		<Text>Sour</Text>
-						// 		<FontAwesome name="exchange" size={24} />
-						// 	</TabHeading>
-						// }
 						tabStyle={{
 							backgroundColor: '#000',
 						}}

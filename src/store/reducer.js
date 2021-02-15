@@ -1,16 +1,24 @@
 const initialState = {
 	flour: 0,
-	flourMain: { key: 'flourMain', id: 1, title: 'Flour', mass: 0, perc: 0 },
-	flourAdd: { key: 'flourAdd', id: 2, title: 'Flour # 2', mass: 0, perc: 0 },
-	flourAdd_2: { key: 'flourAdd_2', id: 2, title: 'Flour # 3', mass: 0, perc: 0 },
-	water: { key: 'water', id: 3, title: 'Water', mass: 0, perc: 0 },
-	salt: { key: 'salt', id: 4, title: 'Salt', mass: 0, perc: 0 },
-	yeastsour: { key: 'yeastsour', id: 5, title: 'Yeast / Sour Starter', mass: 0, perc: 0 },
+	flourMain: { key: 'flourMain', type: 'flour', id: 1, title: 'Flour', mass: 0, perc: 0 },
+	flourAdd: { key: 'flourAdd', type: 'flour', id: 2, title: 'Flour # 2', mass: 0, perc: 0 },
+	flourAdd_2: { key: 'flourAdd_2', type: 'flour', id: 2, title: 'Flour # 3', mass: 0, perc: 0 },
+	water: { key: 'water', type: 'ingridient', id: 3, title: 'Water', mass: 0, perc: 0 },
+	salt: { key: 'salt', type: 'ingridient', id: 4, title: 'Salt', mass: 0, perc: 0 },
+	yeastsour: {
+		key: 'yeastsour',
+		type: 'ingridient',
+		id: 5,
+		title: 'Yeast / Sour Starter',
+		mass: 0,
+		perc: 0,
+	},
 }
 
 export const reducer = (state = initialState, action) => {
 	let flour = 0
 
+	// SET COMMON FLOUR MASS
 	Object.keys(state)
 		.filter((item) => item.match('flour'))
 		.slice(1)
@@ -22,6 +30,7 @@ export const reducer = (state = initialState, action) => {
 			}
 		})
 
+	// SET FLOUR MASS
 	let flourMassObj = {}
 	Object.keys(state)
 		.filter((item) => item.match('flour'))
@@ -41,6 +50,7 @@ export const reducer = (state = initialState, action) => {
 			}
 		})
 
+	// SET INGRIDIENT PERCENT WHEN FLOUR MASS HAS BEEN CHANGED
 	let flourIngrPercObj = {}
 	Object.keys(state)
 		.filter((item) => !item.match('flour'))
@@ -76,6 +86,21 @@ export const reducer = (state = initialState, action) => {
 					!isNaN(percIngridient) && percIngridient !== Infinity
 						? percIngridient
 						: state[item].perc,
+			},
+		}
+	}
+
+	if (Boolean(!action.type.match('flour')) && action.type.match('Perc')) {
+		let item = action.type.replace('Perc', '')
+		return {
+			...state,
+			[item]: {
+				...state[item],
+				mass:
+					!isNaN(massIngridient) && massIngridient !== Infinity
+						? massIngridient
+						: state[item].mass,
+				perc: action.payload,
 			},
 		}
 	}
@@ -137,13 +162,42 @@ export const reducer = (state = initialState, action) => {
 		case 'CLEAR':
 			return {
 				flour: 0,
-				flourMain: { key: 'flourMain', id: 1, title: 'Flour', mass: 0, perc: 0 },
-				flourAdd: { key: 'flourAdd', id: 2, title: 'Flour # 2', mass: 0, perc: 0 },
-				flourAdd_2: { key: 'flourAdd_2', id: 2, title: 'Flour # 3', mass: 0, perc: 0 },
-				water: { key: 'water', id: 3, title: 'Water', mass: 0, perc: 0 },
-				salt: { key: 'salt', id: 4, title: 'Salt', mass: 0, perc: 0 },
+				flourMain: {
+					key: 'flourMain',
+					type: 'flour',
+					id: 1,
+					title: 'Flour',
+					mass: 0,
+					perc: 0,
+				},
+				flourAdd: {
+					key: 'flourAdd',
+					type: 'flour',
+					id: 2,
+					title: 'Flour # 2',
+					mass: 0,
+					perc: 0,
+				},
+				flourAdd_2: {
+					key: 'flourAdd_2',
+					type: 'flour',
+					id: 2,
+					title: 'Flour # 3',
+					mass: 0,
+					perc: 0,
+				},
+				water: {
+					key: 'water',
+					type: 'ingridient',
+					id: 3,
+					title: 'Water',
+					mass: 0,
+					perc: 0,
+				},
+				salt: { key: 'salt', type: 'ingridient', id: 4, title: 'Salt', mass: 0, perc: 0 },
 				yeastsour: {
 					key: 'yeastsour',
+					type: 'ingridient',
 					id: 5,
 					title: 'Yeast / Sour Starter',
 					mass: 0,

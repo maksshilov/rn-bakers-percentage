@@ -1,9 +1,9 @@
 import React from 'react'
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native'
 
-export const Ingridient = ({ name, mass, perc, onChangeMass, onChangePerc }) => {
+export const Ingridient = ({ name, mass, perc, onChangeMass, onChangePerc, type }) => {
 	return (
-		<View style={styles.wrapper}>
+		<View style={{ ...styles.wrapper, backgroundColor: type === 'flour' ? '#FCF4E7' : '#fff' }}>
 			<Text style={styles.label}>{name}</Text>
 			<TouchableOpacity>
 				<TextInput
@@ -19,7 +19,7 @@ export const Ingridient = ({ name, mass, perc, onChangeMass, onChangePerc }) => 
 					}}
 				/>
 			</TouchableOpacity>
-			<Text style={styles.units}>kg</Text>
+			<Text style={styles.units}>m</Text>
 			<TextInput
 				style={styles.value}
 				maxLength={4}
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		marginHorizontal: 10,
+		paddingHorizontal: 10,
 		borderBottomWidth: 1,
 		borderBottomColor: '#ddd',
 		height: 70,

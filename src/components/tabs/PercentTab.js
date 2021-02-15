@@ -1,5 +1,13 @@
 import React, { useState } from 'react'
-import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+	FlatList,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+} from 'react-native'
 import { Ingridient } from '../../components/Ingridient'
 import { Ionicons } from '@expo/vector-icons'
 import { connect } from 'react-redux'
@@ -18,26 +26,34 @@ const PercentTab = ({ state, clear, add }) => {
 	let someState = {}
 
 	mapState.map((item) => {
-		let fn = (value) => {
+		let fnMass = (value) => {
 			store.dispatch({ type: item.key + 'Mass', payload: value })
 		}
-		Object.defineProperty(fn, 'name', { value: item.key + 'Mass' })
+		let fnPerc = (value) => {
+			store.dispatch({ type: item.key + 'Perc', payload: value })
+		}
+		Object.defineProperty(fnMass, 'name', { value: item.key + 'Mass' })
+		Object.defineProperty(fnPerc, 'name', { value: item.key + 'Perc' })
 		someState[item.key] = {
 			...item,
-			fn,
+			fnMass,
+			fnPerc,
 		}
 	})
 
 	let content = Object.keys(someState).map((item) => {
 		return (
-			<Ingridient
-				key={someState[item].key}
-				name={someState[item].title}
-				mass={someState[item].mass.toString()}
-				perc={someState[item].perc.toString()}
-				onChangeMass={(mass) => someState[item].fn(mass)}
-				onChangePerc={() => {}}
-			/>
+			<TouchableOpacity onLongPress={() => alert(someState[item].title)} android_ripple>
+				<Ingridient
+					key={someState[item].key}
+					type={someState[item].type}
+					name={someState[item].title}
+					mass={someState[item].mass.toString()}
+					perc={someState[item].perc.toString()}
+					onChangeMass={(mass) => someState[item].fnMass(mass)}
+					onChangePerc={(perc) => someState[item].fnPerc(perc)}
+				/>
+			</TouchableOpacity>
 		)
 	})
 
