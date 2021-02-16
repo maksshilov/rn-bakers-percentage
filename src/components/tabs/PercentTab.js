@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Animated, Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
 import { Ingridient } from '../../components/Ingridient'
-import { Ionicons } from '@expo/vector-icons'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { connect } from 'react-redux'
 import DialogInput from 'react-native-dialog-input'
 import store from '../../store'
-import { Text, View } from 'native-base'
+import { Text } from 'native-base'
 
 const PercentTab = ({ state, clear, add }) => {
 	const [isDialogVisible, setIsDialogVisible] = useState(false)
@@ -86,7 +86,7 @@ const PercentTab = ({ state, clear, add }) => {
 				}}
 				onPress={() => clear()}
 			>
-				<Ionicons name="trash-outline" size={24} color="white" />
+				<FontAwesome name="trash" size={24} color="white" />
 			</Pressable>
 			<Pressable
 				android_ripple={{ color: 'white' }}
@@ -97,7 +97,7 @@ const PercentTab = ({ state, clear, add }) => {
 				}}
 				onPress={() => setIsDialogVisible(true)}
 			>
-				<Ionicons name="add" size={24} color="white" />
+				<FontAwesome name="plus" size={24} color="white" />
 			</Pressable>
 			<DialogInput
 				isDialogVisible={isDialogVisible}

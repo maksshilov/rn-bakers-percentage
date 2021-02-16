@@ -134,34 +134,6 @@ export const reducer = (state = initialState, action) => {
 	}
 
 	switch (action.type) {
-		case 'FLOUR_MAIN_PERC':
-			return {
-				...state,
-				flourMain: {
-					...state.flourMain,
-					mass: (state.flour * action.payload) / 100,
-					perc: action.payload,
-				},
-				flourAdd: {
-					...state.flourAdd,
-					mass: (state.flour * (100 - action.payload)) / 100,
-					perc: 100 - action.payload,
-				},
-				water: {
-					...state.water,
-					perc:
-						!isNaN(state.flour) && state.flour !== Infinity && state.flour !== 0
-							? Math.round((state.water.mass / state.flour) * 1000) / 10
-							: state.water.perc,
-				},
-				salt: {
-					...state.salt,
-					perc:
-						!isNaN(state.flour) && state.flour !== Infinity && state.flour !== 0
-							? Math.round((state.salt.mass / state.flour) * 1000) / 10
-							: state.salt.perc,
-				},
-			}
 		case 'CLEAR':
 			return {
 				flour: 0,
