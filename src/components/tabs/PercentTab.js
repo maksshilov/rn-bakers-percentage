@@ -53,11 +53,16 @@ const PercentTab = ({ state, clear, add }) => {
 	})
 
 	// ANIMATION FUNCS
+	const marginAnim = useRef(new Animated.Value(0)).current
 	const heightAnim = useRef(new Animated.Value(0)).current
-	const rollDown = () =>
-		Animated.timing(heightAnim, { toValue: 10, duration: 300, useNativeDriver: false }).start()
-	const rollUp = () =>
+	const rollDown = () => {
+		Animated.timing(marginAnim, { toValue: 10, duration: 300, useNativeDriver: false }).start()
+		Animated.timing(heightAnim, { toValue: 20, duration: 300, useNativeDriver: false }).start()
+	}
+	const rollUp = () => {
+		Animated.timing(marginAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start()
 		Animated.timing(heightAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start()
+	}
 
 	useEffect(() => {
 		state.flour > 0 ? rollDown() : rollUp()
@@ -66,7 +71,7 @@ const PercentTab = ({ state, clear, add }) => {
 	return (
 		<React.Fragment>
 			<ScrollView>
-				<Animated.View style={{ height: heightAnim, margin: heightAnim }}>
+				<Animated.View style={{ height: heightAnim, margin: marginAnim }}>
 					<Text style={{ fontFamily: 'nunito' }}>Flour total weight: {state.flour}</Text>
 				</Animated.View>
 				{content}

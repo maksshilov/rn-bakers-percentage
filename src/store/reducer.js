@@ -22,7 +22,10 @@ export const reducer = (state = initialState, action) => {
 		.slice(1)
 		.map((item) => {
 			if (item === action.type.replace('Mass', '')) {
+				console.log('mass')
 				flour += action.payload
+			} else if (Boolean(action.type.match('Perc'))) {
+				flour = state.flour
 			} else {
 				flour += state[item].mass
 			}
@@ -54,16 +57,15 @@ export const reducer = (state = initialState, action) => {
 		.filter((item) => item.match('flour'))
 		.slice(1)
 		.map((item) => {
-			if (item === action.type.replace('Mass', '')) {
-				flourMassObj[item] = {
+			if (item === action.type.replace('Perc', '')) {
+				flourPercObj[item] = {
 					...state[item],
-					mass: action.payload,
-					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
+					mass: (flour * action.payload) / 100,
+					perc: action.payload,
 				}
 			} else {
-				flourMassObj[item] = {
+				flourPercObj[item] = {
 					...state[item],
-					perc: flour === 0 ? 0 : Math.round((state[item].mass / flour) * 1000) / 10,
 				}
 			}
 		})
@@ -85,10 +87,18 @@ export const reducer = (state = initialState, action) => {
 	let percIngridient = Math.round((action.payload / flour) * 1000) / 10
 	let massIngridient = Math.round(flour * action.payload) / 100
 
-	if (Boolean(action.type.match('flour'))) {
+	if (Boolean(action.type.match('flour') && action.type.match('Mass'))) {
 		return {
 			flour,
 			...flourMassObj,
+			...flourIngrPercObj,
+		}
+	}
+
+	if (Boolean(action.type.match('flour') && action.type.match('Perc'))) {
+		return {
+			flour,
+			...flourPercObj,
 			...flourIngrPercObj,
 		}
 	}
