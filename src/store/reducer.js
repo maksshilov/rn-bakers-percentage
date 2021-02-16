@@ -48,6 +48,26 @@ export const reducer = (state = initialState, action) => {
 			}
 		})
 
+	// SET FLOUR PERC
+	let flourPercObj = {}
+	Object.keys(state)
+		.filter((item) => item.match('flour'))
+		.slice(1)
+		.map((item) => {
+			if (item === action.type.replace('Mass', '')) {
+				flourMassObj[item] = {
+					...state[item],
+					mass: action.payload,
+					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
+				}
+			} else {
+				flourMassObj[item] = {
+					...state[item],
+					perc: flour === 0 ? 0 : Math.round((state[item].mass / flour) * 1000) / 10,
+				}
+			}
+		})
+
 	// SET INGRIDIENT PERCENT WHEN FLOUR MASS HAS BEEN CHANGED
 	let flourIngrPercObj = {}
 	Object.keys(state)
@@ -130,31 +150,6 @@ export const reducer = (state = initialState, action) => {
 						!isNaN(state.flour) && state.flour !== Infinity && state.flour !== 0
 							? Math.round((state.salt.mass / state.flour) * 1000) / 10
 							: state.salt.perc,
-				},
-			}
-		case 'WATER_PERC':
-			return {
-				...state,
-				water: {
-					...state.water,
-					mass:
-						!isNaN(massIngridient) && massIngridient !== Infinity
-							? massIngridient
-							: state.water.mass,
-					perc: action.payload,
-				},
-			}
-		case 'SALT_PERC':
-			return {
-				...state,
-				salt: {
-					...state.salt,
-
-					mass:
-						!isNaN(massIngridient) && massIngridient !== Infinity
-							? massIngridient
-							: state.salt.mass,
-					perc: action.payload,
 				},
 			}
 		case 'CLEAR':

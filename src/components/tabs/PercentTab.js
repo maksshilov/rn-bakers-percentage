@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { Animated, Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
 import { Ingridient } from '../../components/Ingridient'
 import { Ionicons } from '@expo/vector-icons'
 import { connect } from 'react-redux'
 import DialogInput from 'react-native-dialog-input'
 import store from '../../store'
+import { Text, View } from 'native-base'
 
 const PercentTab = ({ state, clear, add }) => {
 	const [isDialogVisible, setIsDialogVisible] = useState(false)
@@ -12,8 +13,6 @@ const PercentTab = ({ state, clear, add }) => {
 	let mapState = Object.values(state)
 		.slice(1)
 		.sort((a, b) => a.id - b.id)
-
-	console.log(mapState)
 
 	let someState = {}
 
@@ -53,9 +52,25 @@ const PercentTab = ({ state, clear, add }) => {
 		)
 	})
 
+	// ANIMATION FUNCS
+	const heightAnim = useRef(new Animated.Value(0)).current
+	const rollDown = () =>
+		Animated.timing(heightAnim, { toValue: 10, duration: 300, useNativeDriver: false }).start()
+	const rollUp = () =>
+		Animated.timing(heightAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start()
+
+	useEffect(() => {
+		state.flour > 0 ? rollDown() : rollUp()
+	})
+
 	return (
 		<React.Fragment>
-			<ScrollView>{content}</ScrollView>
+			<ScrollView>
+				<Animated.View style={{ height: heightAnim, margin: heightAnim }}>
+					<Text style={{ fontFamily: 'nunito' }}>Flour total weight: {state.flour}</Text>
+				</Animated.View>
+				{content}
+			</ScrollView>
 
 			<Pressable
 				android_ripple={{ color: 'white' }}
@@ -83,7 +98,6 @@ const PercentTab = ({ state, clear, add }) => {
 				isDialogVisible={isDialogVisible}
 				title={'New ingridient'}
 				message={'Enter the new ingredient name'}
-				// hintInput={'HINT INPUT'}
 				submitInput={(inputText) => {
 					add(inputText)
 					setIsDialogVisible(false)
@@ -114,7 +128,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		width: 60,
 		height: 60,
-		// borderWidth: 1,
 		borderRadius: 60,
 	},
 })
