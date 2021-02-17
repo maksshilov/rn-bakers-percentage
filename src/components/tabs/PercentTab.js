@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Animated, Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+import { Alert, Animated, Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
 import { Ingridient } from '../../components/Ingridient'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { connect } from 'react-redux'
@@ -7,8 +7,27 @@ import DialogInput from 'react-native-dialog-input'
 import store from '../../store'
 import { Text } from 'native-base'
 
-const PercentTab = ({ state, clear, add }) => {
+const PercentTab = ({ state, clear, add, remove }) => {
 	const [isDialogVisible, setIsDialogVisible] = useState(false)
+
+	const removeHandler = (item) => {
+		Alert.alert(
+			'Deleting item',
+			`Are you sure you want to delete ${item.title} ?`,
+			[
+				{
+					text: 'Cancel',
+					onPress: () => console.log('Cancel Pressed'),
+					style: 'cancel',
+				},
+				{
+					text: 'Delete',
+					onPress: () => remove(item.key),
+				},
+			],
+			{ cancelable: true }
+		)
+	}
 
 	let mapState = Object.values(state)
 		.slice(1)
@@ -36,7 +55,7 @@ const PercentTab = ({ state, clear, add }) => {
 		return (
 			<TouchableOpacity
 				key={someState[item].key}
-				onLongPress={() => alert(someState[item].title)}
+				onLongPress={() => removeHandler(someState[item])}
 				android_ripple
 			>
 				<Ingridient
@@ -168,6 +187,7 @@ const mapDispatchToProps = (dispatch) => {
 			console.log(newItemSort)
 			dispatch({ type: 'ADD', payload: { newItem, newItemSort, type } })
 		},
+		remove: (item) => dispatch({ type: 'DELETE', payload: item }),
 	}
 }
 

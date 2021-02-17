@@ -1,3 +1,5 @@
+import { Alert } from 'react-native'
+
 const initialState = {
 	flour: 0,
 	flourMain: { key: 'flourMain', type: 'flour', id: 1.1, title: 'Flour', mass: 0, perc: 0 },
@@ -177,6 +179,10 @@ export const reducer = (state = initialState, action) => {
 			}
 
 			return { ...newState }
+		case 'DELETE':
+			let removeState = state
+			delete removeState[action.payload]
+			return { ...removeState }
 		default:
 			return state
 	}
