@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Slider from 'react-native-smooth-slider'
 import { View, Text } from 'native-base'
-import { Pressable, StyleSheet, TextInput } from 'react-native'
+import { Pressable, StyleSheet, TextInput, Keyboard } from 'react-native'
 
 export const SoutStiffTab = () => {
 	const [liquid, setLiquid] = useState(0)
@@ -13,7 +13,8 @@ export const SoutStiffTab = () => {
 				<Text style={{ fontFamily: 'nunito-bold', fontSize: 30 }}>Liquid</Text>
 				<Pressable onLongPress={() => alert('123')}>
 					<TextInput
-						placeholder="entry liquid sourstarter mass"
+						keyboardType="decimal-pad"
+						placeholder="type mass"
 						style={{ fontSize: 30, textAlign: 'center', fontFamily: 'nunito' }}
 						onChangeText={(value) => {
 							setLiquid(value)

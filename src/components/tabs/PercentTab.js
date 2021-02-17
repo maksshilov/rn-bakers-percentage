@@ -1,5 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Alert, Animated, Pressable, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+import {
+	Alert,
+	Animated,
+	Easing,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	TouchableOpacity,
+} from 'react-native'
 import { Ingridient } from '../../components/Ingridient'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { connect } from 'react-redux'
@@ -11,9 +19,10 @@ const PercentTab = ({ state, clear, add, remove }) => {
 	const [isDialogVisible, setIsDialogVisible] = useState(false)
 
 	const removeHandler = (item) => {
+		const { title } = item
 		Alert.alert(
 			'Deleting item',
-			`Are you sure you want to delete ${item.title} ?`,
+			`Are you sure you want to delete${'\n'}"${title}" ingridient ?`,
 			[
 				{
 					text: 'Cancel',
@@ -51,6 +60,67 @@ const PercentTab = ({ state, clear, add, remove }) => {
 		}
 	})
 
+	// ANIMATION FUNCS
+	const { flour } = state
+
+	const prevFlourRef = useRef()
+	useEffect(() => {
+		prevFlourRef.current = flour
+	})
+	const prevFlour = prevFlourRef.current
+
+	const heightAnim = useRef(new Animated.Value(0)).current
+	const topAnim = useRef(new Animated.Value(0)).current
+	const marginAnim = useRef(new Animated.Value(0)).current
+
+	const easing = Easing.inOut(Easing.cubic)
+	const duration = 600
+
+	const rollDown = () => {
+		Animated.timing(heightAnim, {
+			toValue: 25,
+			duration,
+			useNativeDriver: false,
+			easing,
+		}).start()
+		Animated.timing(topAnim, {
+			toValue: 0,
+			duration,
+			useNativeDriver: false,
+			easing,
+		}).start()
+		Animated.timing(marginAnim, {
+			toValue: 10,
+			duration,
+			useNativeDriver: false,
+			easing,
+		}).start()
+	}
+	const rollUp = () => {
+		Animated.timing(heightAnim, {
+			toValue: 0,
+			duration,
+			useNativeDriver: false,
+			easing,
+		}).start()
+		Animated.timing(topAnim, {
+			toValue: -30,
+			duration,
+			useNativeDriver: false,
+			easing,
+		}).start()
+		Animated.timing(marginAnim, {
+			toValue: 0,
+			duration,
+			useNativeDriver: false,
+			easing,
+		}).start()
+	}
+
+	useEffect(() => {
+		flour > 0 ? rollDown() : rollUp()
+	})
+
 	let content = Object.keys(someState).map((item) => {
 		return (
 			<TouchableOpacity
@@ -70,28 +140,20 @@ const PercentTab = ({ state, clear, add, remove }) => {
 			</TouchableOpacity>
 		)
 	})
-
-	// ANIMATION FUNCS
-	const marginAnim = useRef(new Animated.Value(0)).current
-	const heightAnim = useRef(new Animated.Value(0)).current
-	const rollDown = () => {
-		Animated.timing(marginAnim, { toValue: 10, duration: 300, useNativeDriver: false }).start()
-		Animated.timing(heightAnim, { toValue: 20, duration: 300, useNativeDriver: false }).start()
-	}
-	const rollUp = () => {
-		Animated.timing(marginAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start()
-		Animated.timing(heightAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start()
-	}
-
-	useEffect(() => {
-		state.flour > 0 ? rollDown() : rollUp()
-	})
-
+	// console.log(topAnim._children[0].top)
 	return (
 		<React.Fragment>
 			<ScrollView>
-				<Animated.View style={{ height: heightAnim, margin: marginAnim }}>
-					<Text style={{ fontFamily: 'nunito' }}>Flour total weight: {state.flour}</Text>
+				<Animated.View
+					style={{
+						top: topAnim,
+						height: heightAnim,
+						margin: marginAnim,
+						flexDirection: 'row',
+						alignItems: 'center',
+					}}
+				>
+					<Text style={{ fontFamily: 'nunito' }}>Flour total weight: {flour}</Text>
 				</Animated.View>
 				{content}
 			</ScrollView>
@@ -184,7 +246,6 @@ const mapDispatchToProps = (dispatch) => {
 					.join('')
 			}
 
-			console.log(newItemSort)
 			dispatch({ type: 'ADD', payload: { newItem, newItemSort, type } })
 		},
 		remove: (item) => dispatch({ type: 'DELETE', payload: item }),

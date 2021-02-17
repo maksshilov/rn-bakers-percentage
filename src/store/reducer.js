@@ -1,5 +1,3 @@
-import { Alert } from 'react-native'
-
 const initialState = {
 	flour: 0,
 	flourMain: { key: 'flourMain', type: 'flour', id: 1.1, title: 'Flour', mass: 0, perc: 0 },
@@ -17,60 +15,53 @@ const initialState = {
 
 export const reducer = (state = initialState, action) => {
 	let flour = 0
-
-	// SET COMMON FLOUR MASS
-	Object.keys(state)
+	let flourArr = Object.keys(state)
 		.filter((item) => item.match('flour'))
 		.slice(1)
-		.map((item) => {
-			if (item === action.type.replace('Mass', '')) {
-				console.log('mass')
-				flour += action.payload
-			} else if (Boolean(action.type.match('Perc'))) {
-				flour = state.flour
-			} else {
-				flour += state[item].mass
-			}
-		})
+
+	// SET COMMON FLOUR MASS
+	flourArr.map((item) => {
+		if (item === action.type.replace('Mass', '')) {
+			flour += action.payload
+		} else if (Boolean(action.type.match('Perc'))) {
+			flour = state.flour
+		} else {
+			flour += state[item].mass
+		}
+	})
 
 	// SET FLOUR MASS
 	let flourMassObj = {}
-	Object.keys(state)
-		.filter((item) => item.match('flour'))
-		.slice(1)
-		.map((item) => {
-			if (item === action.type.replace('Mass', '')) {
-				flourMassObj[item] = {
-					...state[item],
-					mass: action.payload,
-					perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
-				}
-			} else {
-				flourMassObj[item] = {
-					...state[item],
-					perc: flour === 0 ? 0 : Math.round((state[item].mass / flour) * 1000) / 10,
-				}
+	flourArr.map((item) => {
+		if (item === action.type.replace('Mass', '')) {
+			flourMassObj[item] = {
+				...state[item],
+				mass: action.payload,
+				perc: flour === 0 ? 0 : Math.round((action.payload / flour) * 1000) / 10,
 			}
-		})
+		} else {
+			flourMassObj[item] = {
+				...state[item],
+				perc: flour === 0 ? 0 : Math.round((state[item].mass / flour) * 1000) / 10,
+			}
+		}
+	})
 
 	// SET FLOUR PERC
 	let flourPercObj = {}
-	Object.keys(state)
-		.filter((item) => item.match('flour'))
-		.slice(1)
-		.map((item) => {
-			if (item === action.type.replace('Perc', '')) {
-				flourPercObj[item] = {
-					...state[item],
-					mass: (flour * action.payload) / 100,
-					perc: action.payload,
-				}
-			} else {
-				flourPercObj[item] = {
-					...state[item],
-				}
+	flourArr.map((item) => {
+		if (item === action.type.replace('Perc', '')) {
+			flourPercObj[item] = {
+				...state[item],
+				mass: (flour * action.payload) / 100,
+				perc: action.payload,
 			}
-		})
+		} else {
+			flourPercObj[item] = {
+				...state[item],
+			}
+		}
+	})
 
 	// SET INGRIDIENT PERCENT WHEN FLOUR MASS HAS BEEN CHANGED
 	let flourIngrPercObj = {}
@@ -86,9 +77,7 @@ export const reducer = (state = initialState, action) => {
 			}
 		})
 
-	let percIngridient = Math.round((action.payload / flour) * 1000) / 10
-	let massIngridient = Math.round(flour * action.payload) / 100
-
+	// TYPE FLOUR MASS VALUE
 	if (Boolean(action.type.match('flour') && action.type.match('Mass'))) {
 		return {
 			flour,
@@ -97,6 +86,7 @@ export const reducer = (state = initialState, action) => {
 		}
 	}
 
+	// TYPE FLOUR PERCENT VALUE
 	if (Boolean(action.type.match('flour') && action.type.match('Perc'))) {
 		return {
 			flour,
@@ -105,7 +95,9 @@ export const reducer = (state = initialState, action) => {
 		}
 	}
 
+	// TYPE INGRIDIENT MASS VALUE
 	if (Boolean(!action.type.match('flour')) && action.type.match('Mass')) {
+		let percIngridient = Math.round((action.payload / flour) * 1000) / 10
 		let item = action.type.replace('Mass', '')
 		return {
 			...state,
@@ -120,7 +112,9 @@ export const reducer = (state = initialState, action) => {
 		}
 	}
 
+	// TYPE INGRIDIENT PERCENT VALUE
 	if (Boolean(!action.type.match('flour')) && action.type.match('Perc')) {
+		let massIngridient = Math.round(flour * action.payload) / 100
 		let item = action.type.replace('Perc', '')
 		return {
 			...state,
